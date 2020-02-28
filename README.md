@@ -10,6 +10,10 @@ Install it with npm :
 
     npm install --save sails-hook-passport-cued
 
+or
+
+    npm install --save git+https://github.com/S-Stephen/sails-hook-passport-cued.git
+
 You need to install all strategies you want to use :
 
 npm install --save passport-local passport-twitter passport-facebook
