@@ -69,6 +69,28 @@ module.exports.passport = {
         scope: 'email',
         hostedDomain: 'cam.ac.uk'
       }
+    },
+    raven: {
+      name: 'raven',
+      protocol: 'WAAWLS', // NB protocol must be alpha numeric (not WAA->WLS) to store in passport
+      strategy: require('passport-raven').Strategy,
+      options: {
+        audience: 'http://localhost:1337',
+        desc: 'Module selection application',
+        msg: 'we need to check you are a current student'
+        // use demonstration raven server in development
+        //debug: process.env.NODE_ENV !== 'production',
+        //debug: false
+      },
+
+      func: function (crsid, response, cb) {
+        console.dir(response);
+        console.log('login with crsid: ' + crsid);
+        cb(null, {
+          crsid: crsid,
+          isCurrent: response.isCurrent
+        });
+      }
     }
   }
 };

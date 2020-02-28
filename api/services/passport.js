@@ -357,6 +357,22 @@ passport.loadStrategies = function () {
         self.use(new Strategy(self.protocols.bearer.authorize));
       }
 
+    } else if (key == "raven") {
+      Strategy = strategies[key].strategy;
+      // Options provided here as we utilize .env.NODE_ENV
+      self.use(
+        new Strategy({
+            audience: sails.config.hostname,
+            desc: sails.config.description,
+            msg: "This application is only available to current staff and students",
+            debug: process.env.NODE_ENV !== "production",
+            passReqToCallback: true
+            //debug: true
+          },
+          self.protocols.raven
+        )
+      );
+
     } else {
       var protocol = strategies[key].protocol;
       var callback = strategies[key].callback;

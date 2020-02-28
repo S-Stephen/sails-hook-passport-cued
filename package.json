@@ -15,6 +15,7 @@
     "passport": "^0.2.2",
     "passport-google-oauth": "^2.0.0",
     "passport-local": "^1.0.0",
+    "passport-raven": "^1.0.0",
     "validator": "^3.39.0",
     "sails-util-mvcsloader": "git+https://github.com/S-Stephen/sails-util-mvcsloader.git#sails_utils_merge"
   },
