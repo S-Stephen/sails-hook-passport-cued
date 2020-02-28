@@ -280,7 +280,8 @@ passport.endpoint = function(req, res) {
  * @param {Function} next
  */
 passport.callback = function(req, res, next) {
-  var provider = req.param("provider", "local");
+  var provider = req.param("provider") ? req.param("provider") : "raven", //, 'raven') //'local')
+  //var provider = req.param("provider", "local");
   var action = req.param("action");
 
   // Passport.js wasn't really built for local user registration, but it's nice
