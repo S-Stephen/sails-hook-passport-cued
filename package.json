@@ -1,0 +1,40 @@
+{
+  "name": "sails-hook-passport-cued",
+  "version": "1.0.0",
+  "description": "Implement basic Passport.js authentification strategies for CUED",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node -e \"console.log('node scripts/install.js')\""
+  },
+  "license": "MIT",
+  "dependencies": {
+    "bcrypt": "^0.8.4",
+    "bcryptjs": "^2.2.1",
+    "fs-extra": "^0.22.1",
+    "passport": "^0.2.2",
+    "validator": "^3.39.0",
+    "sails-util-mvcsloader": "git+https://github.com/S-Stephen/sails-util-mvcsloader.git#sails_utils_merge"
+  },
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/S-Stephen/sails-hook-passport-cued.git"
+  },
+  "keywords": [
+    "sails",
+    "sails-hook",
+    "authentication",
+    "auth",
+    "passport",
+    "facebook",
+    "twitter"
+  ],
+  "author": "S. Shorrock",
+  "bugs": {
+    "url": "https://github.com/S-Stephen/sails-hook-passport-cued/issues"
+  },
+  "homepage": "https://github.com/S-Stephen/sails-hook-passport-cued",
+  "sails": {
+    "isHook": true
+  }
+}
