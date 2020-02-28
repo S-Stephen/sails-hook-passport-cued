@@ -4,7 +4,7 @@
   "description": "Implement basic Passport.js authentification strategies for CUED",
   "main": "index.js",
   "scripts": {
-    "postinstall": "node -e \"console.log('node scripts/install.js')\""
+    "postinstall": "node scripts/install.js"
   },
   "license": "MIT",
   "dependencies": {
