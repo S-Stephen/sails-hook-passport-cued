@@ -62,7 +62,7 @@ passport.protocols = require("./protocols");
  * @param {Object}   profile
  * @param {Function} next
  */
-passport.connect = async function(req, query, profile, next) {
+passport.connect = async function (req, query, profile, next) {
   var user = {};
   var provider;
 
@@ -115,18 +115,20 @@ passport.connect = async function(req, query, profile, next) {
     // no user in the session
     if (!mypass) {
       // no passport - as you would expect
-      var myuser = await User.findOrCreate(
-        {
+      var myuser = await User.findOrCreate({
           username: user.username
         },
         user
       );
       query.user = myuser.id;
-      var newpass = await Passport.create(query);
-      if (sails.config.passport.onUserCreated) {
-        // This can be included in the config
-        sails.config.passport.onUserCreated(user, profile);
-      }
+      //create a new passport
+      await Passport.create(query);
+      //if (sails.config.passport.onUserCreated) {
+      // TODO: implement onUserCreate
+      //  // This can be included in the config
+      //  // - however the user may have existed (findOrCreate)
+      //  sails.config.passport.onUserCreated(user, profile);
+      //}
       next(null, myuser);
     } else {
       if (query.hasOwnProperty("tokens") && query.tokens !== passport.tokens) {
@@ -150,88 +152,6 @@ passport.connect = async function(req, query, profile, next) {
     next(null, req.user);
   }
 
-  // Passport.findOne({
-  //   provider: provider,
-  //   identifier: query.identifier.toString()
-  // }, (err, passport) => {
-  //   if (err) {
-  //     return next(err);
-  //   }
-
-  //   if (!req.user) {
-  //     // Scenario: A new user is attempting to sign up using a third-party
-  //     //           authentication provider.
-  //     // Action:   Create a new user and assign them a passport.
-  //     if (!passport) {
-  //       User.create(user, (err, user) => {
-  //         if (err) {
-  //           if (err.code === 'E_VALIDATION') {
-  //             if (err.invalidAttributes.email) {
-  //               req.flash('error', 'Error.Passport.Email.Exists');
-  //             } else {
-  //               req.flash('error', 'Error.Passport.User.Exists');
-  //             }
-  //           }
-
-  //           return next(err);
-  //         }
-
-  //         query.user = user.id;
-
-  //         Passport.create(query, (err, passport) => {
-  //           // If a passport wasn't created, bail out
-  //           if (err) {
-  //             return next(err);
-  //           }
-  //           if (sails.config.passport.onUserCreated) {
-  //             sails.config.passport.onUserCreated(user, profile);
-  //           }
-  //           next(err, user);
-  //         });
-  //       });
-  //     }
-  //     // Scenario: An existing user is trying to log in using an already
-  //     //           connected passport.
-  //     // Action:   Get the user associated with the passport.
-  //     else {
-  //       // If the tokens have changed since the last session, update them
-  //       if (query.hasOwnProperty('tokens') && query.tokens !== passport.tokens) {
-  //         passport.tokens = query.tokens;
-  //       }
-
-  //       // Save any updates to the Passport before moving on
-  //       passport.save((err, passport) => {
-  //         if (err) {
-  //           return next(err);
-  //         }
-
-  //         // Fetch the user associated with the Passport
-  //         User.findOne(passport.user.id, next);
-  //       });
-  //     }
-  //   } else {
-  //     // Scenario: A user is currently logged in and trying to connect a new
-  //     //           passport.
-  //     // Action:   Create and assign a new passport to the user.
-  //     if (!passport) {
-  //       query.user = req.user.id;
-
-  //       Passport.create(query, (err, passport) => {
-  //         // If a passport wasn't created, bail out
-  //         if (err) {
-  //           return next(err);
-  //         }
-
-  //         next(err, req.user);
-  //       });
-  //     }
-  //     // Scenario: The user is a nutjob or spammed the back-button.
-  //     // Action:   Simply pass along the already established session.
-  //     else {
-  //       next(null, req.user);
-  //     }
-  //   }
-  // });
 };
 
 /**
@@ -243,10 +163,13 @@ passport.connect = async function(req, query, profile, next) {
  * @param  {Object} req
  * @param  {Object} res
  */
-passport.endpoint = function(req, res) {
+passport.endpoint = function (req, res) {
   var strategies = sails.config.passport.strategies;
   var provider = req.param("provider");
-  var options = {};
+  var options = {
+    successRedirect: "/index",
+    passReqToCallback: 1
+  };
 
   // If a provider doesn't exist for this endpoint, send the user back to the
   // login page
@@ -279,7 +202,7 @@ passport.endpoint = function(req, res) {
  * @param {Object}   res
  * @param {Function} next
  */
-passport.callback = function(req, res, next) {
+passport.callback = function (req, res, next) {
   var provider = req.param("provider") ? req.param("provider") : "raven"; //, 'raven') //'local')
   //var provider = req.param("provider", "local");
   var action = req.param("action");
@@ -310,28 +233,12 @@ passport.callback = function(req, res, next) {
 };
 
 /**
-           * Load all strategies defined in the Passport configuration
-           *
-           * For example, we could add this to our config to use the GitHub strategy
-           * with permission to access a users email address (even if it's marked as
-           * private) as well as permission to add and update a user's Gists:
-           *
-           github: {
-                name: 'GitHub',
-                protocol: 'oauth2',
-                strategy: require('passport-github').Strategy
-                scope: [ 'user', 'gist' ]
-                options: {
-                  clientID: 'CLIENT_ID',
-                  clientSecret: 'CLIENT_SECRET'
-                }
-              }
-           *
-           * For more information on the providers supported by Passport.js, check out:
-           * http://passportjs.org/guide/providers/
-           *
-           */
-passport.loadStrategies = function() {
+ *
+ * For more information on the providers supported by Passport.js, check out:
+ * http://passportjs.org/guide/providers/
+ *
+ */
+passport.loadStrategies = function () {
   var self = this;
   var strategies = sails.config.passport.strategies;
 
@@ -365,17 +272,10 @@ passport.loadStrategies = function() {
     } else if (key == "raven") {
       Strategy = strategies[key].strategy;
       // Options provided here as we utilize .env.NODE_ENV
+      _.extend(options, strategies[key].options || {});
+      options['debug'] = process.env.NODE_ENV !== "production"
       self.use(
-        new Strategy(
-          {
-            audience: strategies[key].options.audience,
-            desc: strategies[key].options.description,
-            msg:
-              "This application is only available to current staff and students",
-            debug: process.env.NODE_ENV !== "production",
-            passReqToCallback: true
-            //debug: true
-          },
+        new Strategy(options,
           self.protocols.raven
         )
       );
@@ -420,7 +320,7 @@ passport.loadStrategies = function() {
  * @param  {Object} req
  * @param  {Object} res
  */
-passport.disconnect = function(req, res, next) {
+passport.disconnect = function (req, res, next) {
   var user = req.user;
   var provider = req.param("provider", "local");
   var query = {};
