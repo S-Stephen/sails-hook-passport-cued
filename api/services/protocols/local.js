@@ -1,5 +1,5 @@
 var validator = require('validator');
-var crypto    = require('crypto');
+var crypto = require('crypto');
 
 /**
  * Local Authentication Protocol
@@ -22,80 +22,90 @@ var crypto    = require('crypto');
  * @param {Object}   req
  * @param {Object}   res
  * @param {Function} next
+ *
+ * NOTE: As we are using local to test do not provide use to this function
+ * Always populate a passport with know values in the fixtures
+ *
  */
-exports.register = function (req, res, next)
-{
-	var email = req.param('email'), username = req.param('username'), password = req.param('password');
+exports.register = function (req, res, next) {
+  return next(res.serverError('Forbidden: local::register'));
+  /*
+  var email = req.param('email'),
+    username = req.param('username'),
+    password = req.param('password');
 
-	if (!email)
-	{
-		req.flash('error', 'Error.Passport.Email.Missing');
-		return next(new Error('No email was entered.'));
-	}
 
-	if (!username)
-	{
-		req.flash('error', 'Error.Passport.Username.Missing');
-		return next(new Error('No username was entered.'));
-	}
+  if (!email) {
+    req.flash('error', 'Error.Passport.Email.Missing');
+    return next(new Error('No email was entered.'));
+  }
 
-	if (!password)
-	{
-		req.flash('error', 'Error.Passport.Password.Missing');
-		return next(new Error('No password was entered.'));
-	}
+  if (!username) {
+    req.flash('error', 'Error.Passport.Username.Missing');
+    return next(new Error('No username was entered.'));
+  }
 
-	User.create(req.allParams(), function (err, user)
-	{
-		if (err)
-		{
-			if (err.code === 'E_VALIDATION')
-			{
-				if (err.invalidAttributes.email)
-				{
-					req.flash('error', 'Error.Passport.Email.Exists');
-				}
-				else
-				{
-					req.flash('error', 'Error.Passport.User.Exists');
-				}
-			}
+  if (!password) {
+    req.flash('error', 'Error.Passport.Password.Missing');
+    return next(new Error('No password was entered.'));
+  }
 
-			return next(err);
-		}
+  User.create(req.allParams(), function (err, user) {
+    if (err) {
+      if (err.code === 'E_VALIDATION') {
+        if (err.invalidAttributes.email) {
+          req.flash('error', 'Error.Passport.Email.Exists');
+        } else {
+          req.flash('error', 'Error.Passport.User.Exists');
+        }
+      }
 
-		// Generating accessToken for API authentication
-		var token = crypto.randomBytes(48).toString('base64');
+      return next(err);
+    }
 
-		Passport.create({
-			protocol    : 'local',
-			password    : password,
-			user        : user.id,
-			accessToken : token
-		}, function (err, passport)
-		{
-			if (err)
-			{
-				if (err.code === 'E_VALIDATION')
-				{
-					req.flash('error', 'Error.Passport.Password.Invalid');
-				}
+    // Generating accessToken for API authentication
+    var token = crypto.randomBytes(48).toString('base64');
 
-				return user.destroy(function (destroyErr)
-				{
-					next(destroyErr || err);
-				});
-			}
-			if (sails.config.passport.onUserCreated)
-			{
-				sails.config.passport.onUserCreated(user, {
-					provider : 'local'
-				});
-			}
-			next(null, user);
-		});
-	});
+    Passport.create({
+      protocol: 'local',
+      password: password,
+      user: user.id,
+      accessToken: token
+    }, function (err, passport) {
+      if (err) {
+        if (err.code === 'E_VALIDATION') {
+          req.flash('error', 'Error.Passport.Password.Invalid');
+        }
+
+        return user.destroy(function (destroyErr) {
+          next(destroyErr || err);
+        });
+      }
+      if (sails.config.passport.onUserCreated) {
+        sails.config.passport.onUserCreated(user, {
+          provider: 'local'
+        });
+      }
+      next(null, user);
+    });
+  });*/
 };
+
+
+/**
+ * validateLocalPassword
+ *
+ * Not to be used in production as no hashing of passwords occurs.
+ * We do not intend to use the local authentication scheme in production
+ *  - at least not yet! (TODO: salt+hash the passowrds when ented into the passport (connect function of local))
+ * Compare the plain text value of the passord in the local passport
+ */
+
+_validateLocalPassword = function (password, next) {
+  if (password === password) {
+    next(null, true)
+  }
+}
 
 /**
  * Assign local Passport to user
@@ -107,37 +117,37 @@ exports.register = function (req, res, next)
  * @param {Object}   req
  * @param {Object}   res
  * @param {Function} next
+ *
+ * NOTE: As we are using local to test do not provide use to this function
+ * Always populate a passport with know values in the fixtures
  */
-exports.connect = function (req, res, next)
-{
-	var user = req.user, password = req.param('password');
+exports.connect = function (req, res, next) {
 
-	Passport.findOne({
-		protocol : 'local',
-		user     : user.id
-	}, function (err, passport)
-	{
-		if (err)
-		{
-			return next(err);
-		}
+  return next(res.serverError('Forbidden: local::connect'));
+  /*
+  var user = req.user,
+    password = req.param('password');
 
-		if (!passport)
-		{
-			Passport.create({
-				protocol : 'local',
-				password : password,
-				user     : user.id
-			}, function (err, passport)
-			{
-				next(err, user);
-			});
-		}
-		else
-		{
-			next(null, user);
-		}
-	});
+  Passport.findOne({
+    protocol: 'local',
+    user: user.id
+  }, function (err, passport) {
+    if (err) {
+      return next(err);
+    }
+
+    if (!passport) {
+      Passport.create({
+        protocol: 'local',
+        password: password,
+        user: user.id
+      }, function (err, passport) {
+        next(err, user);
+      });
+    } else {
+      next(null, user);
+    }
+  });*/
 };
 
 /**
@@ -152,87 +162,67 @@ exports.connect = function (req, res, next)
  * @param {string}   password
  * @param {Function} next
  */
-exports.login = function (req, identifier, password, next)
-{
-	var isEmail = validator.isEmail(identifier), query = {};
+exports.login = function (req, identifier, password, next) {
+  var isEmail = validator.isEmail(identifier),
+    query = {};
 
-	if (!req._sails.config.passport.localAuthMethod)
-	{
-		req._sails.config.passport.localAuthMethod = "both";
-	}
+  if (!req._sails.config.passport.localAuthMethod) {
+    req._sails.config.passport.localAuthMethod = "both";
+  }
 
-	if (!isEmail && req._sails.config.passport.localAuthMethod == "email")
-	{
-		req.flash('error', 'Error.Passport.Email.NotFound');
-		return next(null, false);
-	}
+  if (!isEmail && req._sails.config.passport.localAuthMethod == "email") {
+    req.flash('error', 'Error.Passport.Email.NotFound');
+    return next(null, false);
+  }
 
-	if (isEmail && req._sails.config.passport.localAuthMethod == "username")
-	{
-		req.flash('error', 'Error.Passport.Username.NotFound');
-		return next(null, false);
-	}
+  if (isEmail && req._sails.config.passport.localAuthMethod == "username") {
+    req.flash('error', 'Error.Passport.Username.NotFound');
+    return next(null, false);
+  }
 
-	if (isEmail)
-	{
-		query.email = identifier;
-	}
-	else
-	{
-		query.username = identifier;
-	}
+  if (isEmail) {
+    query.email = identifier;
+  } else {
+    query.username = identifier;
+  }
 
-	User.findOne(query, function (err, user)
-	{
-		if (err)
-		{
-			return next(err);
-		}
+  User.findOne(query, function (err, user) {
+    if (err) {
+      return next(err);
+    }
 
-		if (!user)
-		{
-			if (isEmail)
-			{
-				req.flash('error', 'Error.Passport.Email.NotFound');
-			}
-			else
-			{
-				req.flash('error', 'Error.Passport.Username.NotFound');
-			}
+    if (!user) {
+      if (isEmail) {
+        req.flash('error', 'Error.Passport.Email.NotFound');
+      } else {
+        req.flash('error', 'Error.Passport.Username.NotFound');
+      }
 
-			return next(null, false);
-		}
+      return next(null, false);
+    }
 
-		Passport.findOne({
-			protocol : 'local',
-			user     : user.id
-		}, function (err, passport)
-		{
-			if (passport)
-			{
-				passport.validatePassword(password, function (err, res)
-				{
-					if (err)
-					{
-						return next(err);
-					}
+    Passport.findOne({
+      protocol: 'local',
+      user: user.id
+    }, function (err, passport) {
+      if (passport) {
 
-					if (!res)
-					{
-						req.flash('error', 'Error.Passport.Password.Wrong');
-						return next(null, false);
-					}
-					else
-					{
-						return next(null, user);
-					}
-				});
-			}
-			else
-			{
-				req.flash('error', 'Error.Passport.Password.NotSet');
-				return next(null, false);
-			}
-		});
-	});
+        _validateLocalPassword(password, function (err, res) {
+          if (err) {
+            return next(err);
+          }
+
+          if (!res) {
+            req.flash('error', 'Error.Passport.Password.Wrong');
+            return next(null, false);
+          } else {
+            return next(null, user);
+          }
+        });
+      } else {
+        req.flash('error', 'Error.Passport.Passport.NotSet');
+        return next(null, false);
+      }
+    });
+  });
 };
