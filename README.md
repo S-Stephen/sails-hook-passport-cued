@@ -2,7 +2,7 @@
 
 Based on: [sails-hook-passport](https://github.com/jaumard/sails-hook-passport) (Which as since been deprecated)
 
-Implement passport.js strategies to log your users with twitter, facebook, google and more...
+Implement passport.js strategies to log your users with local, google and more...
 
 # INSTALL
 
@@ -16,7 +16,7 @@ or
 
 You need to install all strategies you want to use :
 
-npm install --save passport-local passport-twitter passport-facebook
+npm install --save passport-local passport-google-oauth passport-raven
 
 The Hook will generate:
 
@@ -62,7 +62,7 @@ var User =
 
 **You can override this model by creating a User.js under your api/models folder and add more attributes and callbacks.**
 
-Add translation on your config/locales/...
+You may wish to add translation on your config/locales/...
 
     {
         "Error.Passport.Password.Invalid": "The provided password is invalid!",
@@ -82,75 +82,77 @@ Add translation on your config/locales/...
         "Email.Sent" : "An email was sent to change your password"
     }
 
-Enable passport strategies on config/passport.js file :
+Override/Enable passport strategies on config:
+
+At the momment 3 strategies are included:
+
+* local
+* Google Oauth
+* Ucamwebauth
+
+To have any of these strategies loaded you must set their _status: 'active'_ in the passport.strategies config. This can be done in several files with the usual Sails preference;
+
+1. Commandline option eg sails lift --passport.strategies.google.status='active'
+1. Environment varaibles sails_passport_strategies_google_status='active'
+1. .sailsrc in app dirctory
+1. .sailsrc in ~/.sailsrc
+1. config/local.js
+1. config/env/*.js
+1. config/!(local)*.js
+
+The config in [config/passport.js](./config/passport.js) is loaded and can be overriden in an app/local file eg
 
 ```
 module.exports.passport = {
-redirect :
-{
-login : "/",//Login successful
-logout : "/"//Logout successful
-},
-layout : "layout", //Specify the layout file for auth views
-passwordResetTokenValidity : 86400000, //Link to reset password is good the next 24h after asking
-onUserCreated : function (user, providerInfos)//providerInfos is infos from twitter/facebook...
-{
-//Send email for example
-},
-onUserLogged : function (session, user)
-{
-//Set user infos in session for example
-},
-onUserAskNewPassword : function (req, userData, callback)
-{
-//You can here send an email, an example of email template is available under /views/auth/emails
-//var protocol = req.connection.encrypted ? 'https' : 'http';
-//var baseUrl = protocol + '://' + req.headers.host + '/';
-//Use your favorite email sender :)
-//don't forget to call the callback with optional error parameter
-//URL to call : resetPassword?email=<%=user.email%>&token=user.mdpToken
-callback();
-},
-strategies : {
-local : {
-strategy : require('passport-local').Strategy
-},
 
-twitter : {
-name : 'Twitter',
-protocol : 'oauth',
-strategy : require('passport-twitter').Strategy,
-options : {
-consumerKey : 'your-consumer-key',
-consumerSecret : 'your-consumer-secret'
-}
-},
-
-facebook : {
-name : 'Facebook',
-protocol : 'oauth2',
-strategy : require('passport-facebook').Strategy,
-options : {
-clientID : 'your-client-id',
-clientSecret : 'your-client-secret',
-scope : ['email'] /_ email is necessary for login behavior _/
-}
-},
-
-google : {
-name : 'Google',
-protocol : 'oauth2',
-strategy : require('passport-google-oauth').OAuth2Strategy,
-options : {
-clientID : 'your-client-id',
-clientSecret : 'your-client-secret'
-}
-}
-}
+  // a new user has been created - where do we direct them (we may not want auto enrol)
+  userVerifyRedirect: '/member/confirmacc', // page to forward unverified accounts to
+  // If this email domain exists remove from the username
+  removeEmailDomain: '<remove @.domain address>',
+  // Our index page
+  siteIndex: '/index',
+  hostname: 'http://localhost:1337', // our hostname
+  loginView: '../node_modules/sails-hook-passport-cued/templates/auth/login', // login page
+  loginLocal: '../node_modules/sails-hook-passport-cued/templates/auth/local', // local login page
+  redirect: {
+    login: '/', //Login successful
+    logout: '/' //Logout successful
+  },
+  onUserCreated: function (user, providerInfos) {
+    //Send email for example
+  },
+  onUserLogged: function (session, user) {
+    //Set user infos in session for example
+  },
+  strategies: {
+    local: {
+      status: 'active', // needs setting to active for strategy to be loaded
+      name: 'Raven Test (local)'
+    },
+    google: {
+      status: 'active',
+      name: 'Raven Oauth',
+      options: {
+        clientID: '<Your client ID>',
+        clientSecret: '<Your client secret>',
+        scope: 'email',
+        hostedDomain: 'cam.ac.uk'
+      }
+    },
+    raven: {
+      status: 'active',
+      name: 'Raven (Ucamwebauth)',
+      options: {
+        audience: 'http://localhost:1337',
+        desc: 'My Application',
+        msg: 'we need to check you are a current student'
+      }
+    }
+  }
 };
 ```
 
-You can log and register on /login and /register routes.
+You can NOT login and register at /login and /register routes.
 
 ###WARNING
-Don't install passport on your sails projet or hook will not working anymore. If you really need passport on your sails project remove passport from sails-hook-passport-cued module
+Don't install passport on your sails project or hook will not working anymore. If you really need passport on your sails project remove passport from sails-hook-passport-cued module

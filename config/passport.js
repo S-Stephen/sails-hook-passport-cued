@@ -36,6 +36,7 @@ module.exports.passport = {
   strategies: {
 
     local: {
+      status: 'inactive',
       name: 'Local',
       provider: 'local', // required
       strategy: require('passport-local').Strategy
@@ -63,6 +64,7 @@ module.exports.passport = {
 },
 */
     google: {
+      status: 'inactive',
       name: 'Google',
       protocol: 'oauth2',
       strategy: require('passport-google-oauth').OAuth2Strategy,
@@ -74,6 +76,7 @@ module.exports.passport = {
       }
     },
     raven: {
+      status: 'inactive',
       name: 'raven',
       protocol: 'WAAWLS', // NB protocol must be alpha numeric (not WAA->WLS) to store in passport
       strategy: require('passport-raven').Strategy,

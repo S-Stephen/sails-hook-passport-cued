@@ -31,6 +31,11 @@ var AuthController = {
     // Get a list of available providers for use in your templates.
     Object.keys(strategies).forEach((key) => {
 
+      // only display active strateies;
+      if (strategies[key].status !== 'active') {
+        return;
+      }
+
       // Do not use if configSpecifies valid strategies
       // TODO: an option which can be used to force a strategy
       //if (sails.config.passportStrategies && !sails.config.passportStrategies.includes(key)) {

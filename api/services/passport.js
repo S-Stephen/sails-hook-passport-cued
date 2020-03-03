@@ -183,7 +183,6 @@ passport.endpoint = function (req, res) {
   }
 
   if (strategies[provider].options.hasOwnProperty("hostedDomain")) {
-    //  options.hostedDomain = strategies[provider].hd
     options.hostedDomain = strategies[provider].options.hostedDomain;
   }
   // Redirect the user to the provider for authentication. When complete,
@@ -209,7 +208,8 @@ passport.callback = function (req, res, next) {
 
   // Passport.js wasn't really built for local user registration, but it's nice
   // having it tied into everything else.
-  if (provider === "local" && action !== undefined) {
+  // We do not provide local authentication - atm (salt and hash required)
+  /*if (provider === "local" && action !== undefined) {
     if (action === "register" && !req.user) {
       this.protocols.local.register(req, res, next);
     } else if (action === "connect" && req.user) {
@@ -219,17 +219,17 @@ passport.callback = function (req, res, next) {
     } else {
       next(new Error("Invalid action"));
     }
+  } else {*/
+  if (action === "disconnect" && req.user) {
+    this.disconnect(req, res, next);
   } else {
-    if (action === "disconnect" && req.user) {
-      this.disconnect(req, res, next);
-    } else {
-      // The provider will redirect the user to this URL after approval. Finish
-      // the authentication process by attempting to obtain an access token. If
-      // access was granted, the user will be logged in. Otherwise, authentication
-      // has failed.
-      this.authenticate(provider, next)(req, res, req.next);
-    }
+    // The provider will redirect the user to this URL after approval. Finish
+    // the authentication process by attempting to obtain an access token. If
+    // access was granted, the user will be logged in. Otherwise, authentication
+    // has failed.
+    this.authenticate(provider, next)(req, res, req.next);
   }
+  //}
 };
 
 /**
@@ -243,6 +243,11 @@ passport.loadStrategies = function () {
   var strategies = sails.config.passport.strategies;
 
   Object.keys(strategies).forEach(key => {
+    // only load the strategy if status === 'active'
+    if (strategies[key].status !== 'active') {
+      return;
+    }
+
     var options = {
       passReqToCallback: true
     };
