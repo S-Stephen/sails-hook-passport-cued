@@ -21,7 +21,8 @@ module.exports.passport = {
   // Our index page
   siteIndex: '/index',
   hostname: 'http://localhost:1337',
-  login_view: '../node_modules/sails-hook-passport-cued/templates/auth/login',
+  loginView: '../node_modules/sails-hook-passport-cued/templates/auth/login',
+  loginLocal: '../node_modules/sails-hook-passport-cued/templates/auth/local', // where our login page lives
   redirect: {
     login: '/', //Login successful
     logout: '/' //Logout successful
@@ -35,6 +36,8 @@ module.exports.passport = {
   strategies: {
 
     local: {
+      name: 'Local',
+      provider: 'local', // required
       strategy: require('passport-local').Strategy
     },
     /*

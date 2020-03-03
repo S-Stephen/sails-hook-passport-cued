@@ -44,7 +44,7 @@ var AuthController = {
     });
 
     // Render the `auth/login.ext` view
-    res.view(req._sails.config.passport.login_view, {
+    res.view(req._sails.config.passport.loginView, {
       layout: req._sails.config.passport.layout,
       providers: providers,
       errors: req.flash('error')
@@ -103,8 +103,8 @@ var AuthController = {
    * @param {Object} res
    */
   provider: function (req, res) {
-    if (req.param('provider') === 'local') {
-      return res.view('auth/local', {});
+    if (req.param('provider') === 'local' && sails.config.passport.allowLocal) {
+      return res.view(req._sails.config.passport.loginLocal, {});
     } else {
       passport.endpoint(req, res);
     }

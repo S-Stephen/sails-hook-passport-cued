@@ -1,0 +1,103 @@
+<head>
+  <title>Login</title>
+  <link rel="stylesheet" type="text/css" href="/camstyle.css">
+  <link rel="stylesheet" type="text/css" href="/raven.css">
+  <link rel="shortcut icon" href="/img/raven.ico" type="image/x-icon">
+  <script type="text/javascript">
+    <!--
+    var used = false;
+
+    function init() {
+      if (self != top) top.location = self.location;
+      if (!used) document.credentials.userid.focus();
+    }
+    //
+
+    -->
+  </script>
+</head>
+
+<body bgcolor="#ffffff" text="#000000" link="#003399" alink="#cc0000" vlink="#cc3333" onload="init()">
+  <!-- header -->
+
+  <p class="deptitle">Demonstration Authentication Service (copy of old ucam webauth test service login)</p>
+
+  <p>The web resource you requested requires you to identify yourself.
+    This resource
+    is provided by the website <span class="url">sms67pc.eng.cam.ac.uk</span>.
+    You should only proceed if you are happy to be identified to this site.
+    The resource requires you to authenticate because
+    <span class="msg">This application is only available to current staff and students</span>.
+  </p>
+
+  <form role="form" action="/auth/local" method="post" name="credentials">
+
+    <input type="hidden" name="provider" value="local">
+    <table class="form" align="center" summary="Login form">
+      <tbody>
+        <tr>
+          <td>
+
+            <input type="hidden" name="msg" value="This application is only available to current staff and students">
+            <input type="hidden" name="iact" value="">
+            <input type="hidden" name="ver" value="3">
+            <input type="hidden" name="desc" value="">
+
+
+            <table summary="Userid/password" align="center">
+              <tbody>
+                <tr>
+
+                  <th><label for="userid">User-id</label>:</th>
+                  <td><input id="userid" type="text" name="identifier" size="10" value="" onfocus="used=true;"></td>
+                </tr>
+
+                <tr>
+                  <th><label for="pwd">Password</label>:</th>
+                  <td><input id="pwd" type="password" name="password" size="10" autocomplete="off" onfocus="used=true;">
+                  </td>
+                </tr>
+
+              </tbody>
+            </table>
+
+            <p class="raven-small">
+              <input type="checkbox" id="override" name="override" value="override">
+              <label for="override">override login options for this
+                session?</label>
+            </p>
+
+            <input type="submit" name="submit" value="Submit">
+            <input type="submit" name="cancel" value="Cancel">
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+  </form>
+
+  <p>This demonstration service includes a fixed set of test user-ids,
+    <tt>test0001</tt> to <tt>test0500</tt>, all of which have the well known
+    password of '<tt>test</tt>'. User-ids <tt>test0001</tt> to <tt>test0400</tt>
+    are marked as belonging to 'current staff and students', leaving user-ids
+    <tt>test0401</tt> to <tt>test0500</tt> not so marked. Note that the 5th
+    character of these ids is 'zero'. These ids may be freely used but obviously
+    provide <b>absolutly no reliable authentication information</b>. This service
+    also provides a small number of special purpose accounts with non-default
+    passwords.</p>
+
+  <p class="raven-small"><strong>Always</strong> quit your web browser when you
+    have finished accessing services that require authentication. Do not disclose
+    your password to anyone.</p>
+
+  <!-- footer -->
+
+  <br>
+
+  <!--  end footer -->
+
+
+
+</body>
+
+</html>
