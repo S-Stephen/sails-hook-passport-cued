@@ -84,7 +84,7 @@ You may wish to add translation on your config/locales/...
 
 Override/Enable passport strategies on config:
 
-At the momment 3 strategies are included:
+At the moment 3 strategies are included:
 
 * local
 * Google Oauth
@@ -99,6 +99,8 @@ To have any of these strategies loaded you must set their _status: 'active'_ in 
 1. config/local.js
 1. config/env/*.js
 1. config/!(local)*.js
+
+*Note* as an extra precaution if you wish to use the local strategy - for testing purposes only (passwords are not hashed) then you must also set *passport.strategy.allowLocal = true*;
 
 The config in [config/passport.js](./config/passport.js) is loaded and can be overriden in an app/local file eg
 
