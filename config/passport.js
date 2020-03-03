@@ -21,7 +21,8 @@ module.exports.passport = {
   // Our index page
   siteIndex: '/index',
   hostname: 'http://localhost:1337',
-  login_view: '../node_modules/sails-hook-passport-cued/templates/auth/login',
+  loginView: '../node_modules/sails-hook-passport-cued/templates/auth/login',
+  loginLocal: '../node_modules/sails-hook-passport-cued/templates/auth/local', // where our login page lives
   redirect: {
     login: '/', //Login successful
     logout: '/' //Logout successful
@@ -35,6 +36,9 @@ module.exports.passport = {
   strategies: {
 
     local: {
+      status: 'inactive',
+      name: 'Local',
+      provider: 'local', // required
       strategy: require('passport-local').Strategy
     },
     /*
@@ -60,6 +64,7 @@ module.exports.passport = {
 },
 */
     google: {
+      status: 'inactive',
       name: 'Google',
       protocol: 'oauth2',
       strategy: require('passport-google-oauth').OAuth2Strategy,
@@ -68,6 +73,29 @@ module.exports.passport = {
         clientSecret: '<Your client secret>',
         scope: 'email',
         hostedDomain: 'cam.ac.uk'
+      }
+    },
+    raven: {
+      status: 'inactive',
+      name: 'raven',
+      protocol: 'WAAWLS', // NB protocol must be alpha numeric (not WAA->WLS) to store in passport
+      strategy: require('passport-raven').Strategy,
+      options: {
+        audience: 'http://localhost:1337',
+        desc: 'Module selection application',
+        msg: 'we need to check you are a current student'
+        // use demonstration raven server in development
+        //debug: process.env.NODE_ENV !== 'production',
+        //debug: false
+      },
+
+      func: function (crsid, response, cb) {
+        console.dir(response);
+        console.log('login with crsid: ' + crsid);
+        cb(null, {
+          crsid: crsid,
+          isCurrent: response.isCurrent
+        });
       }
     }
   }

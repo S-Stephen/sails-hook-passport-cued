@@ -31,6 +31,11 @@ var AuthController = {
     // Get a list of available providers for use in your templates.
     Object.keys(strategies).forEach((key) => {
 
+      // only display active strateies;
+      if (strategies[key].status !== 'active') {
+        return;
+      }
+
       // Do not use if configSpecifies valid strategies
       // TODO: an option which can be used to force a strategy
       //if (sails.config.passportStrategies && !sails.config.passportStrategies.includes(key)) {
@@ -44,7 +49,7 @@ var AuthController = {
     });
 
     // Render the `auth/login.ext` view
-    res.view(req._sails.config.passport.login_view, {
+    res.view(req._sails.config.passport.loginView, {
       layout: req._sails.config.passport.layout,
       providers: providers,
       errors: req.flash('error')
@@ -103,8 +108,8 @@ var AuthController = {
    * @param {Object} res
    */
   provider: function (req, res) {
-    if (req.param('provider') === 'local') {
-      return res.view('auth/local', {});
+    if (req.param('provider') === 'local' && sails.config.passport.allowLocal) {
+      return res.view(req._sails.config.passport.loginLocal, {});
     } else {
       passport.endpoint(req, res);
     }
