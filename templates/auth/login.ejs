@@ -14,13 +14,17 @@
           padding: 0 6px 0 2.5em;
         }
 </style>
-      
-<% if (typeof providers != "undefined" && Object.keys(providers).length) { %>
-<h4>To login you can also use one of these...</h4>
 
-<% Object.keys(providers).forEach(function (key) { %>
-<div class="btn btn-info">
-<a href="/auth/<%= providers[key].slug %>" class="icon-raven" role="button"><%= providers[key].name %></a>
+<div class="container">
+  <div class="starter-template">
+    <% if (typeof providers != "undefined" && Object.keys(providers).length) { %>
+    <h4>To login you can also use one of these...</h4>
+
+    <% Object.keys(providers).forEach(function (key) { %>
+    <div class="btn btn-info">
+    <a href="/auth/<%= providers[key].slug %>" class="icon-raven" role="button"><%= providers[key].name %></a>
+    </div>
+    <% }); %>
+    <% } %>
+  </div>
 </div>
-<% }); %>
-<% } %>
