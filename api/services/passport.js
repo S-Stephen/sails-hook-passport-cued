@@ -348,11 +348,14 @@ passport.disconnect = function (req, res, next) {
   });
 };
 
+// A little about the flow:
+// https://stackoverflow.com/questions/27637609/understanding-passport-serialize-deserialize
 passport.serializeUser((user, next) => {
   next(null, user.id);
 });
 
 passport.deserializeUser((id, next) => {
+  console.log("user id: "+id)
   User.findOne(id, next);
 });
 
