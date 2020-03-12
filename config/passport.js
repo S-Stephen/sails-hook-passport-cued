@@ -77,12 +77,12 @@ module.exports.passport = {
     },
     raven: {
       status: 'inactive',
-      name: 'raven',
+      name: 'UcamWebauth',
       protocol: 'WAAWLS', // NB protocol must be alpha numeric (not WAA->WLS) to store in passport
       strategy: require('passport-raven').Strategy,
       options: {
-        audience: 'http://localhost:1337',
-        desc: 'Module selection application',
+        audience: 'http://<your host>:<your port>',
+        desc: ',Your application name here>',
         msg: 'we need to check you are a current student'
         // use demonstration raven server in development
         //debug: process.env.NODE_ENV !== 'production',
@@ -91,7 +91,6 @@ module.exports.passport = {
 
       func: function (crsid, response, cb) {
         console.dir(response);
-        console.log('login with crsid: ' + crsid);
         cb(null, {
           crsid: crsid,
           isCurrent: response.isCurrent
