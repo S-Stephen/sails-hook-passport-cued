@@ -3,10 +3,8 @@
  */
 module.exports.policies = {
   'AuthController': {
-    'test': ['sessionAuth']
-  },
-  '*': ['passport', 'sessionAuth'],
-  'auth': {
+    'test': ['sessionAuth'],
     '*': ['passport']
-  }
+  },
+  '*': ['passport', 'sessionAuth'] // insists all requests generate a passport session
 };

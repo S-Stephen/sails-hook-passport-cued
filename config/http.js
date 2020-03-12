@@ -1,29 +1,12 @@
 /**
- * Created by jaumard on 12/05/2015.
+ * Provides custom middleware that needs to be added to the 
+ * exports.http.middleware object (ie order)
  */
 module.exports.http = {
   middleware: {
-    passportInit: require('passport').initialize(),
-    passportSession: require('passport').session(),
+    
+    passportCuedInit: require('passport').initialize(), // add after session
+    passportCuedSession: require('passport').session(), // add after passportCuedInit
 
-    flash: require('connect-flash')(),
-    order: [
-      'startRequestTimer',
-      'cookieParser',
-      'session',
-      'passportInit',
-      'passportSession',
-      'flash',
-      'bodyParser',
-      'handleBodyParserError',
-      'compress',
-      'methodOverride',
-      'poweredBy',
-      'router',
-      'www',
-      'favicon',
-      '404',
-      '500'
-    ]
   }
 };

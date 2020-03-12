@@ -6,6 +6,10 @@ Implement passport.js strategies to log your users with local, google and more..
 
 # INSTALL
 
+First uninstall aAssport if it exists in the local application:
+
+    npm uninstall passport
+
 Install it with npm :
 
     npm install --save sails-hook-passport-cued
@@ -20,7 +24,7 @@ npm install --save passport-local passport-google-oauth passport-raven
 
 The Hook will generate:
 
-- a passport service (which should be converted to a Helper),
+- a passport service (TODO: which should be converted to a Helper),
 - models (User and Passport),
 - actions (albeit v1 actions),
 - routes,
@@ -30,7 +34,7 @@ The Hook will generate:
 
 ## CONFIGURE
 
-### Models
+## Models
 
 A \*Passport() Model will generated and loaded automatically into your datastore
 
@@ -90,19 +94,36 @@ At the moment 3 strategies are included:
 * Google Oauth
 * Ucamwebauth
 
-To have any of these strategies loaded you must set their _status: 'active'_ in the passport.strategies config. This can be done in several files with the usual Sails preference;
+To have any of these strategies loaded you must set their _status: 'active'_ in the passport.strategies config. This can be done in several files with the usual Sails [precedence](https://sailsjs.com/documentation/concepts/configuration)
 
 1. Commandline option eg sails lift --passport.strategies.google.status='active'
-1. Environment varaibles sails_passport_strategies_google_status='active'
+1. Environment varaibles eg sails_passport_strategies_google_status='active'
 1. .sailsrc in app dirctory
 1. .sailsrc in ~/.sailsrc
 1. config/local.js
 1. config/env/*.js
-1. config/!(local)*.js
+1. config/!(local)*.js (these are our regular app/config files)
 
 *Note* as an extra precaution if you wish to use the local strategy - for testing purposes only (passwords are not hashed) then you must also set *passport.strategy.allowLocal = true*;
 
-The config in [config/passport.js](./config/passport.js) is loaded and can be overriden in an app/local file eg
+## Config 
+### http.js
+
+Include *passportCuedInit* and *passportCuedSession* in the http.middleware.order array (after *session*) eg:
+
+```
+  order: [
+    ...
+    session,
+    passportCuedInit,
+    passportCuedsession,
+    ...
+  ]
+```
+
+### passport.js
+
+The config in [config/passport.js](./config/passport.js) will be loaded and can be overriden in an app/env/*js or app/local.js file eg
 
 ```
 module.exports.passport = {
@@ -153,6 +174,15 @@ module.exports.passport = {
   }
 };
 ```
+
+### policies.js
+
+These are produced to require all requests generate a passport and manage the AuthController requests
+
+### routes.js
+
+Added to handle the login / logouts / callback flow
+
 
 You can NOT login and register at /login and /register routes.
 
