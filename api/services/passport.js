@@ -356,7 +356,7 @@ passport.serializeUser((user, next) => {
 
 passport.deserializeUser((id, next) => {
   console.log("user id: "+id)
-  User.findOne(id, next);
+  User.findOne(id, next).populateAll();
 });
 
 module.exports = passport;
