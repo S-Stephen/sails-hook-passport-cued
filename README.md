@@ -1,12 +1,12 @@
 # sails-hook-passport-cued
 
-Based on: [sails-hook-passport](https://github.com/jaumard/sails-hook-passport) (Which as since been deprecated)
+Based on: [sails-hook-passport](https://github.com/jaumard/sails-hook-passport) (Which has since been deprecated)
 
 Implement passport.js strategies to log your users with local, google and more...
 
 # INSTALL
 
-First uninstall aAssport if it exists in the local application:
+First uninstall Passport if it exists in the local application:
 
     npm uninstall passport
 
@@ -17,6 +17,11 @@ Install it with npm :
 or
 
     npm install --save git+https://github.com/S-Stephen/sails-hook-passport-cued.git
+
+or from a branch, tag or commit (for testing purposes)
+
+    npm install --save git+https://github.com/S-Stephen/sails-hook-passport-cued.git#<branch|tag|commit name>
+
 
 You need to install all strategies you want to use :
 
