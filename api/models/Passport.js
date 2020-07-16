@@ -53,7 +53,8 @@ var Passport = {
     // passport (with protocol 'local') is created for a user.
     password: {
       type: 'string',
-      minLength: 8
+      minLength: 8,
+      allowNull: true
     },
     accessToken: {
       type: 'string'
