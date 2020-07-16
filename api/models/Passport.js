@@ -57,7 +57,8 @@ var Passport = {
       allowNull: true
     },
     accessToken: {
-      type: 'string'
+      type: 'string',
+      allowNull: true
     },
 
     // Provider fields: Provider, identifer and tokens
