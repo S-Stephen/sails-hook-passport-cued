@@ -6,7 +6,7 @@ Implement passport.js strategies to log your users with local, google and more..
 
 # INSTALL
 
-First uninstall aAssport if it exists in the local application:
+First uninstall Passport if it exists in the local application:
 
     npm uninstall passport
 
@@ -142,10 +142,10 @@ module.exports.passport = {
     logout: '/' //Logout successful
   },
   onUserCreated: function (user, providerInfos) {
-    //Send email for example
+    //Send email for example - not sure how to use these??
   },
   onUserLogged: function (session, user) {
-    //Set user infos in session for example
+    //Set user infos in session for example - not sure how to use these??
   },
   strategies: {
     local: {
@@ -183,6 +183,21 @@ These are produced to require all requests generate a passport and manage the Au
 
 Added to handle the login / logouts / callback flow
 
+### Impersonating other users.
+
+It is the responsibility of the application to manage whether a user is able to impersonate another user. 
+
+To do so the calling app must: 
+
+*  Ensure that the user to impersonate has a record in the user table  (if not create one) and set the session variable **req.session.impersonateID** to this ID.
+*  Store the current user as verified by Passport in the session eg **req.session.originalUser**
+* (Optionally on impesonating) switch the **req.user** to be that of the required user
+
+
+To remove (revert back) the app must:
+
+* Set req.user back to the original user eg (**req.session.originalUser**)
+* remove the session variable **req.session.impersonateID**
 
 You can NOT login and register at /login and /register routes.
 
