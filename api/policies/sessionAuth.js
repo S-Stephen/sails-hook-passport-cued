@@ -7,7 +7,7 @@
  * @docs        :: http://sailsjs.org/#!documentation/policies
  *
  */
-module.exports = function (req, res, next) {
+module.exports = async function (req, res, next) {
     //if(typeof req.user !== 'undefined' && !req.user.inactive){
     if (typeof req.user !== 'undefined') {
         if (!req.user.inactive) {
