@@ -75,7 +75,8 @@ var AuthController = {
 
     // mark the user as logged out for auth purposes
     req.session.authenticated = false;
-    res.redirect('/');
+    res.redirect( (req._sails.config.passport.logoutRedirect) ? 
+                   req._sails.config.passport.logoutRedirect : '' );
   },
 
   /**

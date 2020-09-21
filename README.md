@@ -130,6 +130,8 @@ module.exports.passport = {
 
   // a new user has been created - where do we direct them (we may not want auto enrol)
   userVerifyRedirect: '/member/confirmacc', // page to forward unverified accounts to
+  // Redirect to use after logout (may rquire JSON return)
+  logoutRedirect: '/profile'
   // If this email domain exists remove from the username
   removeEmailDomain: '<remove @.domain address>',
   // Our index page
