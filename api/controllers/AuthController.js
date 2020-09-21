@@ -74,7 +74,8 @@ var AuthController = {
     req.logout();
 
     // mark the user as logged out for auth purposes
-    req.session.authenticated = false;
+    // req.session.authenticated = false;
+    req.session.destroy(); // remove the entire session - chrome (not firefox) was able to stay logged in?!
     res.redirect( (req._sails.config.passport.logoutRedirect) ? 
                    req._sails.config.passport.logoutRedirect : '' );
   },
