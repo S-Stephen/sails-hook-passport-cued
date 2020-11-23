@@ -355,7 +355,7 @@ passport.serializeUser((user, next) => {
 });
 
 passport.deserializeUser((id, next) => {
-  sails.log.info("user id: "+id)
+  sails.log.debug("user id: "+id)
   User.findOne(id).populateAll().then(function(user){next(null,user)});
 });
 
