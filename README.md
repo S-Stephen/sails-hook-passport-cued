@@ -205,3 +205,53 @@ You can NOT login and register at /login and /register routes.
 
 ###WARNING
 Don't install passport on your sails project or hook will not working anymore. If you really need passport on your sails project remove passport from sails-hook-passport-cued module
+
+## The flow
+
+### Login
+
+A list of methods is to be provided by your login page, these are to be provided by you application and will be hrefs of the form **'/auth/_strategy_name_'**
+
+eg login.component.html:
+
+```
+<p>Welcome to my angular application <span *ngIf="!isProd" >(Test/Staging/Development)</span></p>
+
+<a mat-button mat-raised-button color='primary' href="/auth/google">Login</a>
+<a *ngIf="!isProd" mat-button mat-raised-button color='primary' href="/auth/local">Login (local)</a>
+
+```
+
+This hook will load the route **get /auth/:strategy: AuthController.provider** which unless the provider is local will call the **passport.endpoint** which is defined as a service in this hook, this will essentially call the **passport.authenticate** function.
+
+If the provider is **local** the local login form will be returned in which the form is posted to: **/auth/local** which is handled by the route -> **post /auth/:provider: AuthController.callback**
+
+On the other hand where the provider is not local then completion of the **passport.authenticate** flow the client will still be returned back to **/auth/:provider/callback: AuthController.callback**
+
+So following all authentication attempts the client should arrive at **AuthController.callback**.
+
+If there was an error or no user was returned then the user is forwarded to the **login** again via a redirect to __/login__
+
+#### Other places where the user might get redirected to /login
+
+* Via sessionAuth if the user is undefined then th eclient gets redirected to **login**
+* Vi Passport (in hook) if calling endpoint the strategy does not exist then the user will be redirected to **login**
+
+
+### When a user's session times out
+
+When a users session times out **sessionAuth** should return a **401** response (rather than a redirect to **/login**). In which case the frontend errorHandler should redirect the user to the login page.  
+
+For Angular something like the following:
+
+in ErrorHandler.handleError(err: any): void 
+```
+if ( err.status == 401 ){
+    // send some error message to be displayed
+    this._message.clearMessages()
+    this._message.sendMessage(`Your session appeared to timeout. Please login again`,'information');
+    // note (for further processing) that the user has been re-routed
+    loginRedirect = true;
+    this.router.navigate(['/public/login',{}])
+}
+```

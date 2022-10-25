@@ -25,15 +25,8 @@ module.exports = async function (req, res, next) {
         }
     }
 
-    return res.redirect('/login');
-
-    // User is allowed, proceed to the next policy, 
-    // or if this is the last policy, the controller
-    //  if (req.session.authenticated) {
-    //    return next();
-    //  }
-
-    // User is not allowed
-    // (default res.forbidden() behavior can be overridden in `config/403.js`)
-    //  return res.forbidden('You are not permitted to perform this action.');
+    // provide 401 though TODO add the WWW-Authenticate: header
+    // https://stackoverflow.com/questions/1653493
+    return res.status(401).set('WWW-Authenticate','Oauth realm='+req._sails.config.passport.hostname).send({message: 'unknown user - timeout?'})
+    
 };

@@ -108,7 +108,7 @@ _validateLocalPassword = function (password, next) {
 }
 
 /**
- * Assign local Passport to user
+ * Allocate local Passport to user
  *
  * This function can be used to assign a local Passport to a user who doens't
  * have one already. This would be the case if the user registered using a

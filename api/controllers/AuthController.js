@@ -135,7 +135,14 @@ var AuthController = {
    */
   callback: function (req, res) {
 
+    // if (!req.query.samesite){
+    //   console.log('redirect to self to force the same site cookie to be sent')
+    //   // append a token to redict to same site and therefoe send the sameSiteCookie
+    //   res.redirect(req.url+"&samesite=true");
+    //   return
+    // }
     function tryAgain(err) {
+      sails.log("Try again in callback") // printed when log level = debug
       // Only certain error messages are returned via req.flash('error', someError)
       // because we shouldn't expose internal authorization errors to the user.
       // We do return a generic error and the original request body.
@@ -148,52 +155,44 @@ var AuthController = {
       }
       req.flash('form', req.body);
 
-      // If an error was thrown, redirect the user to the
-      // login, register or disconnect action initiator view.
-      // These views should take care of rendering the error messages.
-      //var action = req.param('action');
-      // only allow login via local strategy
-      //      switch (action) {
-      //        case 'register':
-      //          res.redirect('/register');
-      //          break;
-      //        case 'disconnect':
-      //          res.redirect('back');
-      //          break;
-      //        default:
       res.redirect('/login');
     }
 
-
     passport.callback(req, res, (err, user, challenges, statuses) => {
-      if (err || !user) {
-        return tryAgain(challenges);
-      }
-      req.login(user, (err) => {
-        if (err) {
-          return tryAgain(err);
+      // if (!req.query.samesite){
+      //   console.log('redirect to self to force the same site cookie to be sent')
+      //   // append a token to redict to same site and therefoe send the sameSiteCookie
+      //   res.redirect(req.url+"&samesite=true");
+      // }else{
+        if (err || !user) {
+          return tryAgain(challenges);
         }
-        // Mark the session as authenticated to work with default Sails sessionAuth.js policy
-        req.session.authenticated = true;
-
-        // If the user has just bee created - we may want some more info before provding them further access?
-        if (req._sails.config.passport.userVerifyRedirect && (user.display_name === undefined || user.display_name === '')) {
-          res.redirect(req._sails.config.passport.userVerifyRedirect); // currently MemberController
-        } else {
-          if (req.session.redirect_to) {
-            res.redirect(req.session.redirect_to);
-          } else {
-            // TODO: Provide a function cf onUserCreated maybe redirect on login?
-            // to redirect the user types
-            //if manager
-
-            //if proxy
-
-            //if student
-            res.redirect(req._sails.config.passport.siteIndex);
+        req.login(user, (err) => {
+          if (err) {
+            return tryAgain(err);
           }
-        }
-      });
+          // Mark the session as authenticated to work with default Sails sessionAuth.js policy
+          req.session.authenticated = true;
+          //res.cookie('sails.sid',req.sessionID, { maxAge: 900000, httpOnly: true })
+
+          // If the user has just bee created - we may want some more info before provding them further access?
+          if (req._sails.config.passport.userVerifyRedirect && (user.display_name === undefined || user.display_name === '')) {
+            res.redirect(req._sails.config.passport.userVerifyRedirect); // currently MemberController
+          } else {
+            if (req.session.redirect_to) {
+              res.redirect(req.session.redirect_to);
+            } else {
+              // TODO: Provide a function cf onUserCreated maybe redirect on login?
+              // to redirect the user types
+              //if manager
+
+              //if proxy
+
+              //if student
+              res.redirect(req._sails.config.passport.siteIndex);
+            }
+          }
+        });
     });
   },
 
